@@ -1,4 +1,7 @@
 import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.Object;
 import java.util.*;
 public class Token {
@@ -12,15 +15,23 @@ public class Token {
 		
 	}
 	
-	String[] split(String str1) { //cuts white spaces
+	static String[] split(String str1) { //cuts white spaces
 		//everywhite space is a new element
-		String []str2 = null;
-		Scanner s = new Scanner(str1).useDelimiter("\\s*"); 
-		for(int i=0; i< str1.length(); i++) {
-		 str2[i] = s.next(); 
-		 System.out.println(s.nextInt()); 
-		}
-		s.close();
+		String []str2= null;
+		str2 = new String[200];
+		Scanner scan = new Scanner(str1).useDelimiter(" "); 
+				// Printing the delimiter used
+				System.out.println("The delimiter use is "+scan.delimiter());
+				// Printing the tokenized Strings
+				int i=0;
+				while(scan.hasNext()){
+					System.out.println(scan.next());
+					str2[i] = scan.next();
+					System.out.println("String 2: "+ str2[i]);
+
+					i++;
+				}
+		scan.close();
 		return str2;//pass to sepSpaces
 	}
 	
@@ -83,9 +94,19 @@ public class Token {
 		return false;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
+		System.out.println("Enter string: ");
+		 BufferedReader reader = 
+                 new BufferedReader(new InputStreamReader(System.in));
+      
+      // Reading data using readLine
+      String tokenizeMe = reader.readLine();
 
+      // Printing the read line
+      System.out.println(tokenizeMe);  
+      split(tokenizeMe);
+      
 	}
 
 }
