@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.lang.Object;
+import java.util.*;
 public class Token {
 
 	private ArrayList<Token> list; //stores tokens and their values
@@ -14,14 +15,12 @@ public class Token {
 	String[] split(String str1) { //cuts white spaces
 		//everywhite space is a new element
 		String []str2 = null;
-		for (int i=0; i<str1.length(); i++) {
-			  char c = str1.charAt(i);
-			  if(str1.charAt(i) == ' ') { //whitespace!
-			 
-			  }
-			  
-			}
-		
+		Scanner s = new Scanner(str1).useDelimiter("\\s*"); 
+		for(int i=0; i< str1.length(); i++) {
+		 str2[i] = s.next(); 
+		 System.out.println(s.nextInt()); 
+		}
+		s.close();
 		return str2;//pass to sepSpaces
 	}
 	
