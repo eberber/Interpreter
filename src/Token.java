@@ -14,6 +14,14 @@ public class Token {
 	String[] split(String str1) { //cuts white spaces
 		//everywhite space is a new element
 		String []str2 = null;
+		for (int i=0; i<str1.length(); i++) {
+			  char c = str1.charAt(i);
+			  if(str1.charAt(i) == ' ') { //whitespace!
+			 
+			  }
+			  
+			}
+		
 		return str2;//pass to sepSpaces
 	}
 	
@@ -30,16 +38,16 @@ public class Token {
 		Token t =null;
 		for(int i=0; i < string.length(); i++) {
 			String s = string.substring(0, i);
-			if(isIdentify()) { 
+			if(isIdentify(s)) { 
 				t= new Token(s, "Identify");
 			}
-			else if(isNumber()) {
+			else if(isNumber(s)) {
 				t= new Token(s, "Number");
 			}
-			else if(isKeyword()) {
+			else if(isKeyword(s)) {
 				t= new Token(s, "Keyword");
 			}
-			else if(isPunctuation()) {
+			else if(isPunctuation(s)) {
 				t= new Token(s, "Punctuation");
 			}
 			else {
@@ -54,6 +62,26 @@ public class Token {
 			}
 			
 		}
+	}
+
+	private boolean isPunctuation(String s) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean isKeyword(String s) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean isNumber(String s) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean isIdentify(String s) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	public static void main(String[] args) {
