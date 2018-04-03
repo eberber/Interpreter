@@ -3,6 +3,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Object;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.*;
 public class Token {
 
@@ -80,10 +82,14 @@ public class Token {
 				t= new Token(s, "Identify");
 			}
 			else if(isNumber(s)) {
+				System.out.println("Match at Number");
 				t= new Token(s, "Number");
 			}
 			else if(isKeyword(s)) {
 				t= new Token(s, "Keyword");
+			}
+			else if(isBoolean(s)) {
+				t= new Token(s, "Bool");
 			}
 			else if(isPunctuation(s)) {
 				System.out.println("Match at Punc");
@@ -101,6 +107,14 @@ public class Token {
 			}
 
 		}
+	}
+
+	private static boolean isNumber(String s) {
+		// TODO Auto-generated method stub
+		 NumberFormat formatter = NumberFormat.getInstance();
+		  ParsePosition pos = new ParsePosition(0);
+		  formatter.parse(s, pos);
+		  return s.length() == pos.getIndex();
 	}
 
 	private static boolean isPunctuation(String s) {
@@ -125,12 +139,26 @@ public class Token {
 
 	private static boolean isKeyword(String s) {
 		// TODO Auto-generated method stub
-		return false;
+		switch (s){
+		case "if":  return true;
+		case "then": return true;
+		case "else": return true;
+		case "endif": return true;
+		case "while": return true;
+		case "do": return true;
+		case "endwhile": return true;
+		case "skip": return true;
+		default: return false;
+		}
 	}
 
-	private static boolean isNumber(String s) {
+	private static boolean isBoolean(String s) {
 		// TODO Auto-generated method stub
-		return false;
+		switch (s){
+		case "true":  return true;
+		case "false": return true;
+		default: return false;
+		}
 	}
 
 	private static boolean isIdentify(String s) {
@@ -157,6 +185,6 @@ public class Token {
 		System.out.println(tokenizeMe);  
 
 		sepSpaces(split(tokenizeMe));
-		printArraylist();
+		//printArraylist();
 	}
 }
