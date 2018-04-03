@@ -32,8 +32,8 @@ public class Token {
 	}
 
 	Token (String v, String t){
-		value = v; //takes value of token
-		token = t; //takes token type
+		this.value = v; //takes value of token
+		this.token = t; //takes token type
 	}
 
 	static String[] split(String str1) { //cuts white spaces
@@ -185,11 +185,12 @@ private static boolean isIdentify(String s) {
 
 	return false;
 }
+
 private static void printArraylist(){
-	for(int i =0; i< list.size(); i++) {
-		System.out.println("List value: " + list.get(i).getValue());
-		System.out.println("List token: " + list.get(i).getToken());
-	}
+	//for(int i =0; i< list.size(); i++) {
+		//System.out.println("List value: " + Arrays.toString(list.toArray()));
+		//System.out.println("List token: " + list.get(i).getToken());
+	//}
 }
 
 public static void main(String[] args) throws IOException {
@@ -205,6 +206,6 @@ public static void main(String[] args) throws IOException {
 	System.out.println(tokenizeMe);  
 
 	sepSpaces(split(tokenizeMe));
-	//printArraylist();
+	printArraylist();
 }
 }
