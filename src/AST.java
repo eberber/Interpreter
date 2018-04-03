@@ -47,12 +47,12 @@ public class AST {
 		this.right = r;
 	}
 	/* Also define getter and setter methods*/
-	
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 	}
 
 } class ParsingException extends Exception { 
-	
+
 } // this is to generate Parsing errors
