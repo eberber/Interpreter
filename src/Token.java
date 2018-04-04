@@ -102,17 +102,17 @@ public class Token {
 				System.out.println("Match at Punc");
 				t= new Token(s, "Punctuation");
 			}
-			else {
+		
 				if(t!= null) {
 					System.out.println("Made an addition to list");
 					list.add(t);
 					tokenizeSepSpace(string.substring(i, string.length()-1));
 					break;
 				}
-				if(t==null) {
+				else if(t==null) {
 					System.out.println("Error 1");
 				}
-			}
+			
 
 		}
 	}
@@ -189,7 +189,7 @@ public class Token {
 	private static void printArraylist(){
 		//for(int i =0; i< list.size(); i++) {
 		//System.out.println("List value: " + Arrays.toString(list.toArray()));
-		//System.out.println("List token: " + list.get(i).getToken());
+		System.out.println("List token: " + list.get(1).getToken());
 		//}
 	}
 
@@ -204,7 +204,7 @@ public class Token {
 
 		// Printing the read line
 		System.out.println(tokenizeMe);  
-		sepSpaces(split(tokenizeMe));
+			sepSpaces(split(tokenizeMe));
 		printArraylist();
 	}
 }
