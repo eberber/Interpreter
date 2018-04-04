@@ -26,8 +26,12 @@ public class Token {
 		this.token = token;
 	}
 
-	private static ArrayList<Token> list; //stores tokens and their values
+	private static ArrayList<Token> list = new ArrayList<Token>(); //stores tokens and their values
 	public ArrayList<Token> getList() {
+		if(list ==null) {
+			return new ArrayList<Token>();
+		}
+		else 
 		return list;
 	}
 
@@ -55,14 +59,14 @@ public class Token {
 	}
 
 	public static void sepSpaces(String[] str1) { //
-		for(int i=0;i <str1.length; i++) { //for each element of the array determine what its token is
+		System.out.println("string length: " + str1.length);
+		for(int i=0;i <str1.length; i++){ //for each element of the array determine what its token is
 			if(str1[i] != null) {
 				System.out.println("Passing to token string: " + str1[i]);
-				tokenizeSepSpace(str1[i]);
+				//tokenizeSepSpace(str1[i]);
 			}
-			else { 
-				System.out.println("Reached null");
-				break;
+			else{ 
+				 throw new IllegalArgumentException("The argument cannot be null in sepSpaces");
 			}
 		}
 
@@ -102,7 +106,7 @@ public class Token {
 				System.out.println("Match at Punc");
 				t= new Token(s, "Punctuation");
 			}
-		
+			
 				if(t!= null) {
 					System.out.println("Made an addition to list");
 					list.add(t);
@@ -110,7 +114,7 @@ public class Token {
 					break;
 				}
 				else if(t==null) {
-					System.out.println("Error 1");
+					 throw new IllegalArgumentException("The argument cannot be null");
 				}
 			
 
