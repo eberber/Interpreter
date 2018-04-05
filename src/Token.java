@@ -85,7 +85,11 @@ public class Token {
 			System.out.println("substring:" + string.substring(0,i+1));
 			System.out.println("string s:" + s);
 
-			if(isIdentify(s)) { 
+			 if(isKeyword(s)) {
+				System.out.println("Match at keyword");
+				t1= new Token(s, "Keyword");
+			}
+			else if(isIdentify(s)) { 
 				System.out.println("Match at identify");
 				t1= new Token(s, "Identify");
 			}
@@ -101,27 +105,23 @@ public class Token {
 				System.out.println("Match at Punc");
 				t1= new Token(s, "Punctuation");
 			}
-			else if(isKeyword(s)) {
-				System.out.println("Match at keyword");
-				t1= new Token(s, "Keyword");
-			}
 				if(t1!= null) {
 					t2=new Token(t1.getValue(),t1.getToken());
-					System.out.println("here" + t2.value);
-
 				}
-				if(t1==null) {
+				else if(t1==null) {
 					if(t2==null) {
-						System.out.println("Error");
 						return;
 					}
 					else {
-						System.out.println("Made an addition to list" + t2.value );
+						System.out.println("Made an addition to list " + t2.value );
 						list.add(t2);
 						tokenizeSepSpace(string.substring(i, string.length()-1));
 						break;
 					}
 				}
+		}
+		if(t1!= null) {
+			list.add(t1);
 		}
 	}
 
