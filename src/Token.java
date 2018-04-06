@@ -226,7 +226,7 @@ public class Token {
 		sepSpaces(split(tokenizeMe));
 		printArraylist();
 	}
-}
+
 
 
 /* PARSER */
@@ -241,36 +241,34 @@ class AST {// ASTs at most have 3 children (3 is used for if statements).
 	}
 	//Also define getter and setter methods
 }
-class ParsingException extends Exception {
-} 
+class ParsingException extends Exception {} 
 
 
 void printAST(AST tree){ //print the resulting AST to output file 
 
 }
 AST parseStatement() throws ParsingException {
-	Token grab;
 	AST tree = parseBaseStatement();
-	while (grab.nextToken().value == ";"){
-		Token t = grab.nextToken();
-		grab.consumeToken();
+	while (nextToken().value == ";"){
+		Token t = nextToken();
+		consumeToken();
 		tree = new AST (t, tree, parseBaseStatement(), null);}
 	return tree;
 }
 AST parseBaseStatement() throws  ParsingException {
 	AST tree;
-	Token grab;
-	if (grab.nextToken().token == "Identifier") {tree = parseAssignment();
+	if (nextToken().token == "Identifier") {tree = parseAssignment();
 	}
-	else if (grab.nextToken().value == "if") {
+	else if (nextToken().value == "if") {
 		tree = parseIfStatement();
 	}
-	else if (grab.nextToken().value == "while"){
+	else if (nextToken().value == "while"){
 		tree = parseWhileStatement();
 	}
-	else if (grab.nextToken().value == "skip") {
+	else if (nextToken().value == "skip") {
 		tree = parseSkip();}
-	else {throw new ParsingException();
+	else {
+		throw new ParsingException();
 	}
 	return tree;
 }
@@ -285,12 +283,12 @@ AST parseAssignment() throws ParsingException {
 	 *     otherwise generate parsing Error 
 	 *     */
 	AST tree;
-	Token grab;
-	if(grab.nextToken().token=="Identify") {
-		Token hold =grab.nextToken();
+	
+	if(nextToken().token=="Identify") {
+		Token hold =nextToken();
 		tree = new AST(hold,null,null,null);
-		if(grab.nextToken().token=="=") {
-			Token t2 = new Token("=","Punctuation");
+		if(nextToken().value==":=") {
+			Token t2 = new Token(":=","Punctuation");
 			AST tree2 = parseExpressions();
 			AST tree3 = new AST(t2,tree,null, tree2);
 			return tree3;
@@ -324,8 +322,50 @@ AST parseIfStatement() throws ParsingException {
 	// * otherwise generate parsing error
 	// * otherwise generate parsing error
 	// * otherwise generate parsing error
+		AST tree1;
+		AST tree2;
+		AST tree3;
+		AST tree4;
+		if(nextToken().value=="if") {
+			Token t1 = new Token("if","Keyword"); 
+			consumeToken();
+			tree1 = parseBoolean();
+			if(nextToken().value =="then") {
+				consumeToken();
+				tree2 = parseStatement();
+				if(nextToken().value =="else"){
+					consumeToken();
+					tree3 = parseStatement();
+					if(nextToken().value =="endif") {
+						consumeToken();
+						tree4 = new AST(t1, tree1,tree2,tree3);
+						return tree4;
+					}
+					else {
+						throw new ParsingException();
+					}
+				}
+				else {
+					throw new ParsingException();
+				}
+			}
+			else {
+				throw new ParsingException();
+			}
+		}
+		else {
+			throw new ParsingException();
+		}
+	}
+	
+
+private AST parseBoolean() {
+	// TODO Auto-generated method stub
+	return null;
 }
+
 AST parseWhileStatement() throws ParsingException {
+	return null;
 	//	 check whether next token is "while"   
 	// * if so, make a token t1 for while loops, and consume the token.
 	//		next parse the boolean expression and assign it to AST tree1.
@@ -345,8 +385,18 @@ AST parseSkip() throws ParsingException {
 	// * token t1 as its root
 	// * null for left, middle and right children 
 	//	otherwise generate parsing error
+		AST tree;
+		if(nextToken().getToken()=="skip") {
+			Token t1 = new Token("skip", "Keyword");
+			tree =new AST(t1,null,null,null);
+			return tree;
+		}
+		else{
+			throw new ParsingException();
+		}
+	
 	}
-}
+
 // similarly define a method to parse each of the following:
 // * expressions
 // * numexpressions
@@ -356,7 +406,7 @@ AST parseSkip() throws ParsingException {
 // * numelements
 // * numbersidentifiersboolexpressionsbooltermsboolfactorsboolpiecesboolelementsbooleans
 
-
+}
 
 
 
