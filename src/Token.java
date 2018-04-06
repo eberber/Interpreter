@@ -213,20 +213,7 @@ public class Token {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-		System.out.println("Enter string: ");
-		BufferedReader reader = 
-				new BufferedReader(new InputStreamReader(System.in));
-
-		// Reading data using readLine
-		String tokenizeMe = reader.readLine();
-
-		// Printing the read line
-		System.out.println(tokenizeMe);  
-		sepSpaces(split(tokenizeMe));
-		printArraylist();
-	}
+	
 
 
 
@@ -244,10 +231,6 @@ public class Token {
 	}
 	class ParsingException extends Exception {} 
 
-
-	void printAST(AST tree){ //print the resulting AST to output file 
-
-	}
 	AST parseStatement() throws ParsingException {
 		AST tree = parseBaseStatement();
 		while (nextToken().value == ";"){
@@ -613,18 +596,37 @@ public class Token {
 		return tree1;
 	}
 
-	void printTree(Token r,AST tree){
+	 void printTree(AST tree){
 		if(tree ==null){
 			return;
 		}
-			System.out.println(tree.token);
-			printTree(tree.token, null);
+		//	System.out.println(tree.token);
+			//printTree(tree.token, null);
 			System.out.println(tree.left);
-			printTree(null, tree.left);
+			printTree( tree.left);
 			System.out.println(tree.middle);
-			printTree(null, tree.middle);
+			printTree( tree.middle);
 			System.out.println(tree.right);
-			printTree(null,tree.right);
+			printTree(tree.right);
+	}
+	
+	public static void main(String[] args) throws IOException, ParsingException {
+		// TODO Auto-generated method stub
+		Token grab = null;
+		System.out.println("Enter string: ");
+		BufferedReader reader = 
+				new BufferedReader(new InputStreamReader(System.in));
+
+		// Reading data using readLine
+		String tokenizeMe = reader.readLine();
+
+		// Printing the read line
+		System.out.println(tokenizeMe);  
+		//scanner calls
+		sepSpaces(split(tokenizeMe));
+		printArraylist();
+		//parser calls
+		//grab.printTree(grab.parseStatement());
 	}
 	
 }
