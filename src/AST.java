@@ -6,12 +6,10 @@
 //	AST(Token t, AST l, AST m, AST r){
 //		this.token = t;
 //		this.left = l;this.middle = m;this.right = r;
-//	}
+//		}
 //	//Also define getter and setter methods
 //	}
-//class ParsingException extends Exception { 
-//	
-//} 
+//class ParsingException extends Exception {} 
 //// this is to generate Parsing errors
 //ArrayList<Token> scanner() {
 //	ArrayList<Token> list = new ArrayList<Token> ();
