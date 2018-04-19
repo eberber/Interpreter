@@ -42,6 +42,7 @@ public class Token {
 	}
 	int index = 0; // index in the list of tokens
 	Token nextToken(){ // returns the token in the current index
+		
 		return list.get(index);
 	}
 	void consumeToken(){ // shifts the token forward
@@ -232,6 +233,7 @@ public class Token {
 	class ParsingException extends Exception {} 
 
 	AST parseStatement() throws ParsingException {
+		
 		AST tree = parseBaseStatement();
 		while (nextToken().value == ";"){
 			Token t = nextToken();
@@ -241,15 +243,17 @@ public class Token {
 	}
 	AST parseBaseStatement() throws  ParsingException {
 		AST tree;
-		if (nextToken().token == "Identifier") {tree = parseAssignment();
+		System.out.println("Next token " + nextToken().value);
+		if (nextToken().token == "Identifier") {
+			tree = parseAssignment();
 		}
-		else if (nextToken().value == "if") {
+		else if (nextToken().value.compareTo("if") == 0) {
 			tree = parseIfStatement();
 		}
-		else if (nextToken().value == "while"){
+		else if (nextToken().value.compareTo("while") == 0){
 			tree = parseWhileStatement();
 		}
-		else if (nextToken().value == "skip") {
+		else if (nextToken().value.compareTo("skip") ==  0) {
 			tree = parseSkip();}
 		else {
 			throw new ParsingException();
@@ -310,17 +314,18 @@ public class Token {
 		AST tree2;
 		AST tree3;
 		AST tree4;
-		if(nextToken().value=="if") {
+		if(nextToken().value.compareTo("if")== 0 ) {
 			Token t1 = new Token("if","Keyword"); 
 			consumeToken();
 			tree1 = parseBoolExpress();
-			if(nextToken().value =="then") {
+			if(nextToken().value.compareTo("then") == 0) {
 				consumeToken();
-				tree2 = parseStatement();
-				if(nextToken().value =="else"){
+				tree2 = parseStatement(); 
+				System.out.println("Value before else " + nextToken().value);
+				if(nextToken().value.compareTo("else") == 0){
 					consumeToken();
 					tree3 = parseStatement();
-					if(nextToken().value =="endif") {
+					if(nextToken().value.compareTo("endif") == 0) {
 						consumeToken();
 						tree4 = new AST(t1, tree1,tree2,tree3);
 						return tree4;
@@ -393,7 +398,8 @@ public class Token {
 		// * null for left, middle and right children 
 		//	otherwise generate parsing error
 		AST tree;
-		if(nextToken().getToken()=="skip") {
+		System.out.println("ParseSkip token: "  + nextToken().getToken());
+		if(nextToken().getValue().compareTo("skip")== 0) {
 			Token t1 = new Token("skip", "Keyword");
 			tree =new AST(t1,null,null,null);
 			return tree;
@@ -541,7 +547,7 @@ public class Token {
 	private AST parseBoolpiece() throws ParsingException{
 		AST tree;
 		Token temp;
-		if(nextToken().value=="!"){
+		if(nextToken().value.compareTo("!") == 0){
 			
 			temp = nextToken();
 			consumeToken();
@@ -600,19 +606,16 @@ public class Token {
 		if(tree ==null){
 			return;
 		}
-		//	System.out.println(tree.token);
-			//printTree(tree.token, null);
-			System.out.println(tree.left);
+		
+			System.out.println(tree.token.getToken() + " " + tree.token.getValue());
 			printTree( tree.left);
-			System.out.println(tree.middle);
 			printTree( tree.middle);
-			System.out.println(tree.right);
 			printTree(tree.right);
 	}
 	
 	public static void main(String[] args) throws IOException, ParsingException {
 		// TODO Auto-generated method stub
-		Token grab = null;
+		Token grab = new Token("", "");
 		System.out.println("Enter string: ");
 		BufferedReader reader = 
 				new BufferedReader(new InputStreamReader(System.in));
@@ -626,7 +629,8 @@ public class Token {
 		sepSpaces(split(tokenizeMe));
 		printArraylist();
 		//parser calls
-		//grab.printTree(grab.parseStatement());
+		
+		grab.printTree(grab.parseStatement());
 	}
 	
 }
