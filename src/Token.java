@@ -96,8 +96,8 @@ public class Token {
 			System.out.println("string passed in:" + string);
 			s = string.substring(0, i+1);
 			System.out.println("substring:" + string.substring(0,i+1));
-			System.out.println("string s:" + s);
-
+			//System.out.println("string s:" + s);
+			
 			if(isKeyword(s)) {
 				System.out.println("Match at keyword");
 				t1= new Token(s, "Keyword");
@@ -128,13 +128,14 @@ public class Token {
 				else {
 					System.out.println("Made an addition to list " + t2.value );
 					list.add(t2);
-					tokenizeSepSpace(string.substring(i, string.length()-1));
+					tokenizeSepSpace(string.substring(i, string.length()));
 					break;
 				}
 			}
 		}
 		if(t1!= null) {
 			list.add(t1);
+			
 		}
 	}
 
