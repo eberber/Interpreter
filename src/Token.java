@@ -237,7 +237,7 @@ public class Token {
 
 		AST tree = parseBaseStatement();
 		if(index < list.size()) {
-			System.out.println("next toke in parse state" + nextToken().value);
+			System.out.println("next toke in parse state " + nextToken().value);
 			while (index < list.size() && nextToken().value.compareTo(";") == 0){ 
 				Token t = nextToken();
 				consumeToken();
@@ -341,11 +341,14 @@ public class Token {
 			tree1 = parseBoolExpress();
 			if(nextToken().value.compareTo("then") == 0) {
 				consumeToken();
-				tree2 = parseStatement(); 
-				System.out.println("Value before else " + nextToken().value);
+				tree2 = parseStatement();
+				consumeToken();
+				System.out.println("Value before else "+ nextToken().value);
 				if(nextToken().value.compareTo("else") == 0){
 					consumeToken();
 					tree3 = parseStatement();
+					consumeToken();
+					System.out.println("Value before endif "+ nextToken().value);
 					if(nextToken().value.compareTo("endif") == 0) {
 						consumeToken();
 						tree4 = new AST(t1, tree1,tree2,tree3);
