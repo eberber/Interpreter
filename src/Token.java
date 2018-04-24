@@ -102,10 +102,6 @@ public class Token {
 				System.out.println("Match at keyword");
 				t1= new Token(s, "Keyword");
 			}
-			else if(isIdentify(s)) { 
-				System.out.println("Match at identify");
-				t1= new Token(s, "Identify");
-			}
 			else if(isNumber(s)) {
 				System.out.println("Match at Number");
 				t1= new Token(s, "Number");
@@ -117,6 +113,10 @@ public class Token {
 			else if(isPunctuation(s)) {
 				System.out.println("Match at Punc");
 				t1= new Token(s, "Punctuation");
+			}
+			else if(isIdentify(s)) { 
+				System.out.println("Match at identify");
+				t1= new Token(s, "Identify");
 			}
 			if(t1!= null) {
 				t2=new Token(t1.getValue(),t1.getToken());
@@ -632,6 +632,7 @@ public class Token {
 			}
 		}
 		else if(nextToken().token.compareTo("Bool")  == 0){
+			System.out.println("pleaseeeee");
 			hold = nextToken();
 			tree1 = new AST(hold, null,null,null);
 			consumeToken();
