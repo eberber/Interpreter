@@ -42,7 +42,7 @@ public class Token {
 	}
 	int index = 0; // index in the list of tokens
 	Token nextToken(){ // returns the token in the current index
-		
+
 		return list.get(index);
 	}
 	void consumeToken(){ // shifts the token forward
@@ -121,9 +121,9 @@ public class Token {
 			if(t1!= null) {
 				t2=new Token(t1.getValue(),t1.getToken());
 			}
-			else if(t1==null) {
-				if(t2==null) {
-					return;
+			else { // t1 is null
+				if(t2==null) { System.out.println("Helllo" + s);
+				if (s.compareTo(":") != 0) return;
 				}
 				else {
 					System.out.println("Made an addition to list " + t2.value );
@@ -159,7 +159,7 @@ public class Token {
 		case "(": return true;
 		case ")": return true;
 		case "=": return true;
-		case ":": return true;
+		case ":=": return true;
 		case ";": return true;
 		case "\n":return true;
 		default: return false;
@@ -214,7 +214,7 @@ public class Token {
 		}
 	}
 
-	
+
 
 
 
@@ -233,18 +233,22 @@ public class Token {
 	class ParsingException extends Exception {} 
 
 	AST parseStatement() throws ParsingException {
-		
+
 		AST tree = parseBaseStatement();
-		while (nextToken().value == ";"){
-			Token t = nextToken();
-			consumeToken();
-			tree = new AST (t, tree, parseBaseStatement(), null);}
+		if(index < list.size()) {
+			System.out.println("next toke in parse state" + nextToken().value);
+			while (index < list.size() && nextToken().value.compareTo(";") == 0){ 
+				Token t = nextToken();
+				consumeToken();
+				tree = new AST (t, tree, parseBaseStatement(), null);
+			}
+		}
 		return tree;
 	}
 	AST parseBaseStatement() throws  ParsingException {
 		AST tree;
 		System.out.println("Next token " + nextToken().value);
-		if (nextToken().token == "Identifier") {
+		if (nextToken().token.compareTo("Identify")==0) {
 			tree = parseAssignment();
 		}
 		else if (nextToken().value.compareTo("if") == 0) {
@@ -275,9 +279,16 @@ public class Token {
 		if(nextToken().token=="Identify") {
 			Token hold =nextToken();
 			tree = new AST(hold,null,null,null);
-			if(nextToken().value==":=") {
+			System.out.println("next toke " + nextToken().value);
+			consumeToken();
+			System.out.println("next tokenn " + nextToken().value);		
+			if(nextToken().value.compareTo(":=")==0) {
+				System.out.println("Testing here");
 				Token t2 = new Token(":=","Punctuation");
+				consumeToken();
+				System.out.println("next tokeeeeee " + nextToken().value);
 				AST tree2 = parseExpressions();
+				System.out.println("trees " + tree2.token.value);
 				AST tree3 = new AST(t2,tree,null, tree2);
 				return tree3;
 			}
@@ -289,9 +300,18 @@ public class Token {
 			throw new ParsingException();
 		}
 	}
-	private AST parseExpressions() {
+	AST parseExpressions() throws ParsingException {
 		// TODO Auto-generated method stub
-		return null;
+		AST tree;
+		int temp = index;
+		try {
+			tree = parseNumExpr();
+
+		} catch (Exception e) {
+			index = temp; 
+			tree = parseBoolExpress();
+		}
+		return tree;
 	}
 	AST parseIfStatement() throws ParsingException {
 		//	 check whether nextToken is "if".   
@@ -389,7 +409,7 @@ public class Token {
 			throw new ParsingException();
 		}
 	}
-	
+
 	AST parseSkip() throws ParsingException {
 		//	 check whether the next token is "skip"   
 		// * if so, make a token t1 containing "skip" and its type (KEYWORD).
@@ -443,40 +463,58 @@ public class Token {
 	private AST parseNumExpr() throws ParsingException {
 		// TODO Auto-generated method stub
 		AST tree = parseNumTerm();
-		while (nextToken().value == "+"){
-			Token t = nextToken();
-			consumeToken();
-			tree = new AST (t, tree, parseNumTerm(), null);}
+		if(index < list.size()) {
+			System.out.println("Next token in parse num expr "+ nextToken().value);
+			while (index < list.size() && nextToken().value.compareTo("+") == 0){
+				Token t = nextToken();
+				consumeToken();
+				tree = new AST (t, tree, parseNumTerm(), null);
+			}
+		}
 		return tree;
 	}
 
 	private AST parseNumTerm() throws ParsingException{
 		// TODO Auto-generated method stub
 		AST tree = parseNumFactor();
-		while (nextToken().value == "-"){
-			Token t = nextToken();
-			consumeToken();
-			tree = new AST (t, tree, parseNumFactor(), null);}
+		if(index < list.size()) {
+			System.out.println("Next toke in parsenumterm " + nextToken().value);
+			while (index< list.size() && nextToken().value.compareTo("-") == 0){
+				Token t = nextToken();
+				consumeToken();
+				tree = new AST (t, tree, parseNumFactor(), null);
+			}
+		}
 		return tree;
 	}
 
 	private AST parseNumFactor() throws ParsingException{
 		// TODO Auto-generated method stub
 		AST tree = parseNumPiece();
-		while (nextToken().value == "/"){
-			Token t = nextToken();
-			consumeToken();
-			tree = new AST (t, tree, parseNumPiece(), null);}
+		if(index < list.size()) {
+			System.out.println("next toke on num factr" + nextToken().value);
+			while (index < list.size() && nextToken().value.compareTo("/") == 0){
+				Token t = nextToken();
+				consumeToken();
+				tree = new AST (t, tree, parseNumPiece(), null);
+			}
+		}
 		return tree;
 	}
 
 	private AST parseNumPiece() throws ParsingException{
 		// TODO Auto-generated method stub
+
 		AST tree = parseNumElement();
-		while (nextToken().value == "*"){
-			Token t = nextToken();
-			consumeToken();
-			tree = new AST (t, tree, parseNumElement(), null);}
+		System.out.println("stuff");
+		if(index < list.size()) {
+			System.out.println("next token in parse num piece" + nextToken().value);
+			while (index < list.size() && nextToken().value.compareTo("*") ==0 ){
+				Token t = nextToken();
+				consumeToken();
+				tree = new AST (t, tree, parseNumElement(), null);
+			}
+		}
 		return tree;
 	}
 
@@ -484,11 +522,13 @@ public class Token {
 		// TODO Auto-generated method stub
 		AST tree1;
 		Token hold;
-		
-		if (nextToken().value == "(") {
+
+		if (nextToken().value.compareTo("(") == 0) {
+			System.out.println("here num elemenet");
 			consumeToken();
 			tree1 =parseNumExpr();
-			if(nextToken().value==")"){
+			System.out.println("next toke in num element" + nextToken().value);
+			if(nextToken().value.compareTo(")") ==0){
 				consumeToken();
 				return tree1;
 			}
@@ -496,12 +536,12 @@ public class Token {
 				throw new ParsingException();
 			}
 		}
-		else if(nextToken().token =="Number"){
+		else if(nextToken().token.compareTo("Number") == 0){
 			hold = nextToken();
 			tree1 = new AST(hold, null,null,null);
 			consumeToken();
 		}
-		else if(nextToken().token =="Identify"){
+		else if(nextToken().token.compareTo("Identify") ==0){
 			hold = nextToken();
 			tree1 = new AST(hold, null,null,null);
 			consumeToken();
@@ -512,52 +552,65 @@ public class Token {
 		return tree1;
 	}
 
-	
+
 	private AST parseBoolExpress() throws ParsingException{
 		// TODO Auto-generated method stub
 		AST tree = parseBoolTerm();
-		if (nextToken().value == "="){
-			Token t = nextToken();
-			consumeToken();
-			tree = new AST (t, tree, parseBoolTerm(), null);
+		if(index < list.size()) {
+			if (nextToken().value.compareTo("=") == 0){
+				Token t = nextToken();
+				consumeToken();
+				tree = new AST (t, tree, parseBoolTerm(), null);
 			}
-		return tree;
+		}
+		return tree;	
 	}
 
 	private AST parseBoolTerm() throws ParsingException{
 		// TODO Auto-generated method stub
 		AST tree = parseBoolFactor();
-		while (nextToken().value == "|"){
-			Token t = nextToken();
-			consumeToken();
-			tree = new AST (t, tree, parseBoolFactor(), null);}
+		if(index < list.size()) {
+			System.out.println("next toke in parse bool term " + nextToken().value);
+			while (index < list.size() && nextToken().value.compareTo("|") ==0){
+				Token t = nextToken();
+				consumeToken();
+				tree = new AST (t, tree, parseBoolFactor(), null);
+			}
+		}
 		return tree;
 	}
 
 	private AST parseBoolFactor() throws ParsingException{
 		// TODO Auto-generated method stub
 		AST tree = parseBoolpiece();
-		while (nextToken().value == "&"){
-			Token t = nextToken();
-			consumeToken();
-			tree = new AST (t, tree, parseBoolpiece(), null);}
+		//System.out.println("next toke in parse bool factor before loop " + nextToken().value);
+		if(index < list.size()) {
+			System.out.println("next toke in parse bool factor " + nextToken().value);
+			while (index < list.size() && nextToken().value.compareTo("&") == 0){
+				Token t = nextToken();
+				consumeToken();
+				tree = new AST (t, tree, parseBoolpiece(), null);
+			}
+		}
 		return tree;
 	}
 
 	private AST parseBoolpiece() throws ParsingException{
 		AST tree;
 		Token temp;
+		System.out.println("Next toke in parseboolPiece " + nextToken().value);
 		if(nextToken().value.compareTo("!") == 0){
-			
+
 			temp = nextToken();
 			consumeToken();
 			tree = new AST(temp, parseBoolElem(), null, null);
 		}
 		else{
+			System.out.println("here in boolpiece");
 			tree = parseBoolElem();
 		}
-		
-		
+
+
 		return tree;
 	}
 
@@ -565,11 +618,11 @@ public class Token {
 		// TODO Auto-generated method stub
 		AST tree1;
 		Token hold;
-		
-		if (nextToken().value == "(") {
+
+		if (nextToken().value.compareTo("(") == 0) {
 			consumeToken();
 			tree1 =parseBoolExpress();
-			if(nextToken().value==")"){
+			if(nextToken().value.compareTo(")") == 0){
 				consumeToken();
 				return tree1;
 			}
@@ -577,42 +630,45 @@ public class Token {
 				throw new ParsingException();
 			}
 		}
-		else if(nextToken().token =="Bool"){
+		else if(nextToken().token.compareTo("Bool")  == 0){
 			hold = nextToken();
 			tree1 = new AST(hold, null,null,null);
 			consumeToken();
 		}
-		else if(nextToken().token =="Identify"){
+		else if(nextToken().token.compareTo("Identify") == 0){
 			hold = nextToken();
 			tree1 = new AST(hold, null,null,null);
 			consumeToken();
 		}
 		else{
 			tree1 = parseNumExpr();
-			if(nextToken().value!="=="){
+			if(index < list.size()) {
+				if(nextToken().value.compareTo("==") != 0){
 					throw new ParsingException();
+				}
 			}
 			else{
 				hold = new Token(nextToken().value, nextToken().token);
 				tree1 = new AST(hold, tree1, parseNumExpr(), null);
 			}
-			
+
 		}
-		
+
 		return tree1;
 	}
 
-	 void printTree(AST tree){
+	void printTree(AST tree, int indent){
 		if(tree ==null){
 			return;
 		}
-		
-			System.out.println(tree.token.getToken() + " " + tree.token.getValue());
-			printTree( tree.left);
-			printTree( tree.middle);
-			printTree(tree.right);
+		for (int i = 0; i < indent; i++) System.out.print(" ");
+
+		System.out.println(tree.token.getToken() + " " + tree.token.getValue());
+		printTree( tree.left, indent+1);
+		printTree( tree.middle, indent+1);
+		printTree(tree.right, indent+1);
 	}
-	
+
 	public static void main(String[] args) throws IOException, ParsingException {
 		// TODO Auto-generated method stub
 		Token grab = new Token("", "");
@@ -629,10 +685,10 @@ public class Token {
 		sepSpaces(split(tokenizeMe));
 		printArraylist();
 		//parser calls
-		
-		grab.printTree(grab.parseStatement());
+
+		grab.printTree(grab.parseStatement() , 0);
 	}
-	
+
 }
 
 
