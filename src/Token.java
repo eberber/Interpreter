@@ -7,9 +7,9 @@ import java.lang.Object;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.*;
-/*Scanner
+/* Interpreter
  * Author: Edgar Berber
- * Programming Languages
+ * 
  */
 public class Token {
 
@@ -217,10 +217,7 @@ public class Token {
 	}
 
 
-
-
-
-	/* PARSER */
+	/**************************** PARSER *********************************/
 	class AST {// ASTs at most have 3 children (3 is used for if statements).
 		// For every other statement and expression, at least one child will be null.
 		Token token;AST left;AST middle;AST right;
@@ -535,7 +532,7 @@ public class Token {
 		if (nextToken().value.compareTo("(") == 0) {
 			consumeToken();
 			tree1 =parseNumExpr();
-			
+
 			if(nextToken().value.compareTo(")") ==0){
 				consumeToken();
 				return tree1;
@@ -555,7 +552,7 @@ public class Token {
 			consumeToken();
 		}
 		else{
-				throw new ParsingException();
+			throw new ParsingException();
 		}
 		return tree1;
 	}
@@ -627,7 +624,7 @@ public class Token {
 		// TODO Auto-generated method stub
 		AST tree1 = null;
 		Token hold;
-System.out.println("Parse bool elem toke " + nextToken().value);
+		System.out.println("Parse bool elem toke " + nextToken().value);
 		if (nextToken().value.compareTo("(") == 0) {
 			consumeToken();
 			tree1 =parseBoolExpress();
@@ -664,18 +661,194 @@ System.out.println("Parse bool elem toke " + nextToken().value);
 		}
 		return tree1;
 	}
-
+	// ast that parser builds
+	AST ast;
 	void printTree(AST tree, int indent){
 		if(tree ==null){
 			return;
 		}
-		for (int i = 0; i < indent; i++) System.out.print(" ");
+		for (int i = 0; i < indent; i++) 
+			System.out.print(" ");
 
 		System.out.println(tree.token.getToken() + " " + tree.token.getValue());
 		printTree( tree.left, indent+1);
 		printTree( tree.middle, indent+1);
 		printTree(tree.right, indent+1);
+		ast = tree; //final tree stored globally	
 	}
+
+
+	/********************* EVALUATOR ****************************/
+
+
+	// memory can be modeled as a map from identifiers to values (both represented as strings)
+	Map<String, String> memory = new HashMap<String, String>();
+
+
+	void printMemory() {
+		Iterator it = memory.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry)it.next();
+			System.out.println(pair.getKey() + " = " + pair.getValue());
+			it.remove(); // avoids a ConcurrentModificationException
+		}
+	}
+
+	// this method finds the middle sibling of a left subtree
+	AST findMiddleSibling(AST ast, AST tree) {
+		/*
+				if ast is the same as tree then return null
+				if ast.left is the same as tree then return ast.middle
+				else call findMiddleSibling(ast.left, tree)
+		 */
+		if(ast == tree) {
+			return null;
+		}
+		if(ast.left == tree) {
+			return ast.middle;
+		}
+		else {
+			return ast = findMiddleSibling(ast.left, tree);
+
+		}
+
+	}
+
+
+	// this method is to find the subtree within ast that needs to be evaluated
+	// this subtree must refer to a statement
+	AST findStatementToBeEvaluated(AST tree) {
+		/*
+				if tree.token.value is ";" and tree.left is not null then 
+					call findStatementToBeEvaluated(tree.left)
+				else if tree.token.value is ";" and tree.left is null (which means middle and right are also null) then
+					 nullify the subtree in ast that refers to tree and return null
+				else if tree.token.value is not ";" (i.e., it is either ":=", "if", "skip", or "while") then 
+					return tree.
+		 */
+		if(tree.token.value.compareTo(";") == 0 && tree.left != null) {
+			findStatementToBeEvaluated(tree.left);
+		}
+		else if(tree.token.value.compareTo(";") == 0 && tree.left == null) {
+			ast = null;
+			return null;
+		}
+		else if (tree.token.value.compareTo(";") != 0) {
+			return tree;
+		}
+		return null;
+	}
+
+	// this method is to evaluate expressions
+	void evalExp(AST tree) {
+		/*
+				set tree1 to tree.
+				if tree.token.type is "number" or "boolean" then return
+				else if tree.token.type is "identifier" then 
+					set tree to new AST(new Token(v,t), null, null, null) where
+						v is the mapped value for tree.token.value in the memory and
+						t is either "number" or boolean based on what v is
+
+				else if tree.token.value is either "+", "-", "*", "/", or "==" then
+					if tree.left.token.type is "number" and tree.middle.token.type is "number" then
+						convert tree.left.token.value to an int and call it arg1
+						convert tree.middle.token.value to an int and call it arg2
+						apply tree.token.value to arg1 and arg2 and name it result
+						set tree to new AST(new Token(result, "number"), null, null, null)
+					else if tree.left.token.type is not "number" then
+						call evalExp(tree.left)
+					else call evalExp(tree.middle)
+
+				else if tree.token.value is either "&", "|", or "=" then
+					if tree.left.token.type is "boolean" and tree.middle.token.type is "boolean" then
+						convert tree.left.token.value to a boolean and call it arg1
+						convert tree.middle.token.value to a boolean and call it arg2
+						apply tree.token.value to arg1 and arg2 and name it result
+						set tree to new AST(new Token(result, "boolean"), null, null, null)
+					else if tree.left.token.type is not "boolean" then
+						call evalExp(tree.left)
+					else call evalExp(tree.middle)
+
+				else if tree.token.value is "!" then
+					if tree.left.token.type is "boolean" then
+						convert tree.left.token.value to a boolean and call it arg
+						apply tree.token.value to arg and name it result
+						set tree to new AST(new Token(result, "boolean"), null, null, null)
+					else call evalExp(tree.left)
+
+				set the subtree in ast that refers to tree1 to tree.
+		 */
+
+
+
+		/*	set tree1 to tree.
+		if tree.token.type is "number" or "boolean" then return
+				else if tree.token.type is "identifier" then 
+				set tree to new AST(new Token(v,t), null, null, null) where
+				v is the mapped value for tree.token.value in the memory and
+				t is either "number" or boolean based on what v is
+		 */
+	
+		/*AST tree1;
+		tree1 = tree;
+		if(tree.token.token.compareTo("Number") ==0 ||
+				tree.token.token.compareTo("Bool") ==0 ) {
+			return;
+		}
+		else if(tree.token.token.compareTo("Identify") ==0) {
+			tree = new AST(new Token(v,t) , null,null,null);
+		}
+
+
+*/
+
+
+	}
+
+	void evalStatementToBeEvaluated(AST statementToBeEvaluated){
+		/*
+				if statementToBeEvaluated.token.value is ":=" then
+					evalExp(statementToBeEvaluated.middle)
+					if memory already has a map for key statementToBeEvaluated.left.token.value then 
+						update the mapped value with statementToBeEvaluated.middle.token.value
+					else define a new map in memory with key statementToBeEvaluated.left.token.value and 
+						value statementToBeEvaluated.middle.token.value
+					findMiddleSibling(ast, statementToBeEvaluated) and name it sibling
+					set the subtree in ast that refers to statementToBeEvaluated to sibling
+					set the subtree in ast that referes to sibling to null
+
+				else if statementToBeEvaluated.token.value is "if" then	
+					evalExp(statementToBeEvaluated.left)
+					if statementToBeEvaluated.left.token.value is "true" then 
+						set the subtree in ast that refers to statementToBeEvaluated to statementToBeEvaluated.middle
+					else set the subtree in ast that refers to statementToBeEvaluated to statementToBeEvaluated.right
+
+				else if statementToBeEvaluated.token.value is "while" then
+					clone statementToBeEvaluated.left to a new tree, called whileConditionExpression
+					evalExp(whileConditionExpression)
+					if whileConditionExpression.token.value is "false" then
+						findMiddleSibling(ast, statementToBeEvaluated) and name it sibling
+						set the subtree in ast that refers to statementToBeEvaluated to sibling
+						set the subtree in ast that referes to sibling to null
+					else set the subtree in ast that refers to statementToBeEvaluated to 
+						new AST (new Token(";","punctuation"), statementToBeEvaluated.middle,statementToBeEvaluated, null)
+				else if statementToBeEvaluated.token.value is "skip" then
+					findMiddleSibling(ast, statementToBeEvaluated) and name it sibling
+					set the subtree in ast that refers to statementToBeEvaluated to sibling
+					set the subtree in ast that referes to sibling to null
+		 */
+	}
+
+
+	// this is the main evaluator method
+	void evaluateAST() {
+		while(ast != null) {
+			AST statementToBeEvaluated = findStatementToBeEvaluated(ast);
+			if (statementToBeEvaluated != null){
+				evalStatementToBeEvaluated(statementToBeEvaluated);
+			}
+		}
+	} 
 
 	public static void main(String[] args) throws IOException, ParsingException {
 		// TODO Auto-generated method stub
@@ -693,9 +866,11 @@ System.out.println("Parse bool elem toke " + nextToken().value);
 		sepSpaces(split(tokenizeMe));
 		printArraylist();
 		//parser calls
+		System.out.println("AST: ");
 		grab.printTree(grab.parseStatement() , 0);
+		//evaluator
+		grab.evaluateAST();	
 	}
-
 }
 
 
