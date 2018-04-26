@@ -536,7 +536,7 @@ public class Token {
 		// TODO Auto-generated method stub
 		AST tree1;
 		Token hold;
-		System.out.println("next toke in num element" + nextToken().value);
+		System.out.println("Parse num element toke " + nextToken().value);
 		if (nextToken().value.compareTo("(") == 0) {
 			consumeToken();
 			tree1 =parseNumExpr();
@@ -560,7 +560,7 @@ public class Token {
 			consumeToken();
 		}
 		else{
-			throw new ParsingException();
+				throw new ParsingException();
 		}
 		return tree1;
 	}
@@ -655,8 +655,8 @@ System.out.println("Parse bool elem toke " + nextToken().value);
 			hold = nextToken();
 			if(list.get(index+1).getValue().compareTo("==") ==0 ) {
 				tree1 = parseNumExpr();
-				
 					hold = new Token(nextToken().value, nextToken().token);
+					consumeToken();
 					tree1 = new AST(hold, tree1, parseNumExpr(), null);
 			}
 			else {
