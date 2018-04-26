@@ -282,16 +282,11 @@ public class Token {
 		if(nextToken().token=="Identify") {
 			Token hold =nextToken();
 			tree = new AST(hold,null,null,null);
-			System.out.println("next toke " + nextToken().value);
 			consumeToken();
-			System.out.println("next tokenn " + nextToken().value);		
 			if(nextToken().value.compareTo(":=")==0) {
-				System.out.println("Testing here");
 				Token t2 = new Token(":=","Punctuation");
 				consumeToken();
-				System.out.println("next tokeeeeee " + nextToken().value);
 				AST tree2 = parseExpressions();
-				System.out.println("trees " + tree2.token.value);
 				AST tree3 = new AST(t2,tree,null, tree2);
 				return tree3;
 			}
@@ -645,23 +640,26 @@ System.out.println("Parse bool elem toke " + nextToken().value);
 			}
 		}
 		else if(nextToken().token.compareTo("Bool")  == 0){
-			System.out.println("pleaseeeee");
 			hold = nextToken();
 			tree1 = new AST(hold, null,null,null);
 			consumeToken();
 		}
 		else if(nextToken().token.compareTo("Identify") == 0){
-			
-			hold = nextToken();
-			if(list.get(index+1).getValue().compareTo("==") ==0 ) {
+			int temp = index;
+			try {
 				tree1 = parseNumExpr();
-					hold = new Token(nextToken().value, nextToken().token);
-					consumeToken();
-					tree1 = new AST(hold, tree1, parseNumExpr(), null);
+				if(nextToken().value.compareTo("==") != 0) {
+					throw new Exception();
+				}
+				hold = new Token(nextToken().value, nextToken().token);
+				consumeToken();
+				tree1 = new AST(hold, tree1, parseNumExpr(), null);
 			}
-			else {
-			tree1 = new AST(hold, null,null,null);
-			consumeToken();
+			catch(Exception e) { 
+				index = temp;
+				hold = nextToken();
+				tree1 = new AST(hold, null,null,null);
+				consumeToken();
 			}
 		}
 		return tree1;
