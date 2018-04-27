@@ -247,7 +247,7 @@ public class Token {
 	}
 	AST parseBaseStatement() throws  ParsingException {
 		AST tree;
-		System.out.println("Next token " + nextToken().value);
+		System.out.println("ParseBaseStatement " + nextToken().value);
 		if (nextToken().token.compareTo("Identify")==0) {
 			tree = parseAssignment();
 		}
@@ -264,6 +264,7 @@ public class Token {
 		}
 		return tree;
 	}
+
 	AST parseAssignment() throws ParsingException {
 		/* check whether nextToken is an identifier 
 		 *   if so, make a AST tree1 with token consisting of the identifier, 
@@ -275,12 +276,13 @@ public class Token {
 		 *     otherwise generate parsing Error 
 		 *     */
 		AST tree;
-
+		System.out.println("Token in parseAssign " + nextToken().value);
 		if(nextToken().token=="Identify") {
 			Token hold =nextToken();
 			tree = new AST(hold,null,null,null);
 			consumeToken();
-			if(nextToken().value.compareTo(":=")==0) {
+			System.out.println("Token in parseAssign after consume " + nextToken().value);
+			if(nextToken().value.compareTo(":=") == 0) {
 				Token t2 = new Token(":=","Punctuation");
 				consumeToken();
 				AST tree2 = parseExpressions();
@@ -299,6 +301,7 @@ public class Token {
 		// TODO Auto-generated method stub
 		AST tree;
 		int temp = index;
+		System.out.println("ParseExpressions " + nextToken().value);
 		try {
 			tree = parseNumExpr(); 
 			if(nextToken().value.compareTo("&") ==0 || 
@@ -439,10 +442,10 @@ public class Token {
 		AST tree2;
 
 		Token hold;
-		if (nextToken().value == "(") {
+		if (nextToken().value.compareTo("(") ==0) {
 			consumeToken();
 			tree1 =parseNumExpr();
-			if(nextToken().value==")"){
+			if(nextToken().value.compareTo(")") ==0){
 				consumeToken();
 				return tree1;
 			}
@@ -450,11 +453,11 @@ public class Token {
 				throw new ParsingException();
 			}
 		}
-		else if(nextToken().token =="Number"){
+		else if(nextToken().token.compareTo("Number") ==0 ){
 			hold = nextToken();
 			tree2 = new AST(hold, null,null,null);
 		}
-		else if(nextToken().token =="Identify"){
+		else if(nextToken().token.compareTo("Identify") ==0){
 			hold = nextToken();
 			tree2 = new AST(hold, null,null,null);
 		}
@@ -542,6 +545,7 @@ public class Token {
 			}
 		}
 		else if(nextToken().token.compareTo("Number") == 0){
+			System.out.println("CONSUMED");
 			hold = nextToken();
 			tree1 = new AST(hold, null,null,null);
 			consumeToken();
@@ -674,7 +678,7 @@ public class Token {
 		printTree( tree.left, indent+1);
 		printTree( tree.middle, indent+1);
 		printTree(tree.right, indent+1);
-		ast = tree; //final tree stored globally	
+		//ast = tree; //final tree stored globally	
 	}
 
 
@@ -788,7 +792,7 @@ public class Token {
 				v is the mapped value for tree.token.value in the memory and
 				t is either "number" or boolean based on what v is
 		 */
-	
+
 		/*AST tree1;
 		tree1 = tree;
 		if(tree.token.token.compareTo("Number") ==0 ||
@@ -800,7 +804,7 @@ public class Token {
 		}
 
 
-*/
+		 */
 
 
 	}
@@ -856,7 +860,6 @@ public class Token {
 		System.out.println("Enter string: ");
 		BufferedReader reader = 
 				new BufferedReader(new InputStreamReader(System.in));
-
 		// Reading data using readLine
 		String tokenizeMe = reader.readLine();
 
@@ -869,10 +872,6 @@ public class Token {
 		System.out.println("AST: ");
 		grab.printTree(grab.parseStatement() , 0);
 		//evaluator
-		grab.evaluateAST();	
+		//grab.evaluateAST();	
 	}
 }
-
-
-
-
