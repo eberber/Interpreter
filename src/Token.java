@@ -824,16 +824,48 @@ public class Token {
 
 
 	}
-	void moveTree(AST two , AST three) {
-		if(two == null || three == null) {
+
+	void moveTree(AST one ,AST two , AST three) {
+		if(one == null) {
 			return;
 		}
-		two.token.value=three.token.value;
-		two.token.token=three.token.token;
-		moveTree(two.left, three.left);
-		moveTree(two.middle, three.middle);
-		moveTree(two.right, three.right);
+		if(treeEquality(one, two)) {
+			treeCopy(one,three);
+		}
+		else {
+			moveTree(one.left, two, three);
+			moveTree(one.middle, two, three);
+			moveTree(one.right, two, three);
+		}
+
 	}
+	private void treeCopy(AST one, AST three) {
+		if(one == null) {
+			return;
+		}
+		one.token.value = three.token.value;
+		treeCopy(one.left, three.left);
+		treeCopy(one.right, three.right);
+		treeCopy(one.middle, three.middle);
+	}
+
+	private boolean treeEquality(AST one, AST two) {
+		if(one == null) {
+			if(two == null) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		if(one.token.value == two.token.value) {
+			return treeEquality(one.left, two.left) && 
+					treeEquality(one.middle, two.middle)
+					&& treeEquality(one.right, two.right);
+		}
+		return false;
+	}
+
 	void evalAssignment(AST evaluateMe) {
 		evalExp(evaluateMe.middle);
 		if(memory.containsKey(evaluateMe.left.token.value)) {
@@ -843,15 +875,47 @@ public class Token {
 			memory.put(evaluateMe.left.token.value, evaluateMe.middle.token.value);			
 		}
 		AST sibling = findMiddleSibling(ast, evaluateMe);
+		moveTree(ast, evaluateMe,sibling);
+		nullify(ast,sibling);
 		System.out.println("TAKEN 2 : " + sibling.left.token.value);
-		moveTree(evaluateMe, sibling);
-		sibling= null;
 	}
+	private void nullify(AST ast2, AST sibling) {
+		// TODO Auto-generated method stub
+		if(ast2 == null) {
+			return;
+		}
+		else if(treeEquality(ast2, sibling)) {
+			nullifySingle(ast2);
+		}
+		else {
+			nullify(ast2.left, sibling);
+			nullify(ast2.middle, sibling);
+			nullify(ast2.right, sibling);
+
+		}
+
+
+	}
+
+
+	private AST nullifySingle(AST ast2) {
+		// TODO Auto-generated method stub
+		if(ast2 == null) {
+			return null;
+		}
+		else ast2.token = null;
+		ast2.left = nullifySingle(ast2.left);
+		ast2.middle = nullifySingle(ast2.middle);
+		ast2.right = nullifySingle(ast2.right);
+		ast2 = null;
+		return ast2;
+
+	}
+
 	void evalStatementToBeEvaluated(AST statementToBeEvaluated){
 
 		if (statementToBeEvaluated.token.value.compareTo(":=")==0){
 			evalAssignment(statementToBeEvaluated);
-		System.out.println("TAKEN : " +ast.left.left.token.value);
 		}
 
 
@@ -890,11 +954,11 @@ public class Token {
 	// this is the main evaluator method
 	void evaluateAST() {
 		//while(ast != null) {
-			System.out.println("Inside evaluateAST");
-			AST statementToBeEvaluated = findStatementToBeEvaluated(ast);
-			if (statementToBeEvaluated != null){
-				evalStatementToBeEvaluated(statementToBeEvaluated);
-			}
+		System.out.println("Inside evaluateAST");
+		AST statementToBeEvaluated = findStatementToBeEvaluated(ast);
+		if (statementToBeEvaluated != null){
+			evalStatementToBeEvaluated(statementToBeEvaluated);
+		}
 		//}
 	} 
 
