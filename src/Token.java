@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -286,7 +284,7 @@ public class Token {
 				Token t2 = new Token(":=","Punctuation");
 				consumeToken();
 				AST tree2 = parseExpressions();
-				AST tree3 = new AST(t2,tree,null, tree2);
+				AST tree3 = new AST(t2,tree,tree2, null);
 				return tree3;
 			}
 			else{
@@ -304,14 +302,18 @@ public class Token {
 		System.out.println("ParseExpressions " + nextToken().value);
 		try {
 			tree = parseNumExpr(); 
-			if(nextToken().value.compareTo("&") ==0 || 
-					nextToken().value.compareTo("|") ==0  
-					|| nextToken().value.compareTo("=") ==0 || 
-					nextToken().value.compareTo("==") ==0 )
-			{
-				throw new ParsingException();
+			System.out.println("TREE TOKEN VAL " + tree.token.value);
+			if(index < list.size()) {
+				if(nextToken().value.compareTo("&") ==0 || 
+						nextToken().value.compareTo("|") ==0  
+						|| nextToken().value.compareTo("=") ==0 || 
+						nextToken().value.compareTo("==") ==0 )
+				{
+					throw new ParsingException();
+				}
 			}
 		} catch (Exception e) {
+			System.out.println("+++" + e.getStackTrace());
 			index = temp; 
 			tree = parseBoolExpress();
 		}
@@ -524,6 +526,7 @@ public class Token {
 				tree = new AST (t, tree, parseNumElement(), null);
 			}
 		}
+		System.out.println("TREE TOKEN  " + tree.token.value);
 		return tree;
 	}
 
@@ -545,8 +548,9 @@ public class Token {
 			}
 		}
 		else if(nextToken().token.compareTo("Number") == 0){
-			System.out.println("CONSUMED");
+			System.out.println("is this a num");
 			hold = nextToken();
+			System.out.println("HOLD : " +hold.value);
 			tree1 = new AST(hold, null,null,null);
 			consumeToken();
 		}
@@ -673,12 +677,11 @@ public class Token {
 		}
 		for (int i = 0; i < indent; i++) 
 			System.out.print(" ");
-
 		System.out.println(tree.token.getToken() + " " + tree.token.getValue());
 		printTree( tree.left, indent+1);
 		printTree( tree.middle, indent+1);
 		printTree(tree.right, indent+1);
-		//ast = tree; //final tree stored globally	
+		ast = tree; //final tree stored globally	
 	}
 
 
@@ -690,6 +693,7 @@ public class Token {
 
 
 	void printMemory() {
+		System.out.println("Inside Memory Print");
 		Iterator it = memory.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry)it.next();
@@ -730,6 +734,18 @@ public class Token {
 				else if tree.token.value is not ";" (i.e., it is either ":=", "if", "skip", or "while") then 
 					return tree.
 		 */
+		if(tree.token != null) {
+			System.out.println("findStatementToBeEvaluated token: \n" + tree.token.value);
+		}
+		if(tree.left!= null) {
+			System.out.println("findStatementToBeEvaluated tree left: \n" + tree.left.token.value);
+		}
+		if(tree.middle != null) {
+			System.out.println("findStatementToBeEvaluated tree middle: \n" + tree.middle.token.value);
+		}
+		if(tree.right != null) {
+			System.out.println("findStatementToBeEvaluated tree right: \n" + tree.right.token.value);
+		}
 		if(tree.token.value.compareTo(";") == 0 && tree.left != null) {
 			findStatementToBeEvaluated(tree.left);
 		}
@@ -808,7 +824,27 @@ public class Token {
 
 
 	}
+	void evalAssignment(AST evaluateMe) {
+		/*evalExp(statementToBeEvaluated.middle)
+	if memory already has a map for key statementToBeEvaluated.left.token.value then 
+		update the mapped value with statementToBeEvaluated.middle.token.value
+	else define a new map in memory with key statementToBeEvaluated.left.token.value and 
+		value statementToBeEvaluated.middle.token.value
+	findMiddleSibling(ast, statementToBeEvaluated) and name it sibling
+	set the subtree in ast that refers to statementToBeEvaluated to sibling
+	set the subtree in ast that referes to sibling to null */
+		evalExp(evaluateMe.middle);
+		if(memory.containsKey(evaluateMe.left.token.value)) {
+			memory.put(evaluateMe.left.token.value, evaluateMe.middle.token.value);
+		}
+		else {
+			Map<String, String> temp = new HashMap<String, String>();
+			temp.put(evaluateMe.left.token.value, evaluateMe.middle.token.value);			
+		}
+		AST sibling = findMiddleSibling(ast, evaluateMe);
 
+
+	}
 	void evalStatementToBeEvaluated(AST statementToBeEvaluated){
 		/*
 				if statementToBeEvaluated.token.value is ":=" then
@@ -846,12 +882,13 @@ public class Token {
 
 	// this is the main evaluator method
 	void evaluateAST() {
-		while(ast != null) {
-			AST statementToBeEvaluated = findStatementToBeEvaluated(ast);
-			if (statementToBeEvaluated != null){
-				evalStatementToBeEvaluated(statementToBeEvaluated);
-			}
+		//while(ast != null) {
+		System.out.println("Inside evaluateAST");
+		AST statementToBeEvaluated = findStatementToBeEvaluated(ast);
+		if (statementToBeEvaluated != null){
+			evalStatementToBeEvaluated(statementToBeEvaluated);
 		}
+		//}
 	} 
 
 	public static void main(String[] args) throws IOException, ParsingException {
@@ -872,6 +909,7 @@ public class Token {
 		System.out.println("AST: ");
 		grab.printTree(grab.parseStatement() , 0);
 		//evaluator
-		//grab.evaluateAST();	
+		grab.evaluateAST();	
+		//grab.printMemory();
 	}
 }
