@@ -747,11 +747,11 @@ public class Token {
 			System.out.println("findStatementToBeEvaluated tree right: \n" + tree.right.token.value);
 		}
 		if(tree.token.value.compareTo(";") == 0 && tree.left != null) {
-			findStatementToBeEvaluated(tree.left);
+			return findStatementToBeEvaluated(tree.left);
 		}
 		else if(tree.token.value.compareTo(";") == 0 && tree.left == null) {
 			ast = null;
-			return null;
+			return ast;
 		}
 		else if (tree.token.value.compareTo(";") != 0) {
 			return tree;
@@ -824,31 +824,38 @@ public class Token {
 
 
 	}
+	void moveTree(AST two , AST three) {
+		if(two == null || three == null) {
+			return;
+		}
+		two.token.value=three.token.value;
+		two.token.token=three.token.token;
+		moveTree(two.left, three.left);
+		moveTree(two.middle, three.middle);
+		moveTree(two.right, three.right);
+	}
 	void evalAssignment(AST evaluateMe) {
-		/*evalExp(statementToBeEvaluated.middle)
-	if memory already has a map for key statementToBeEvaluated.left.token.value then 
-		update the mapped value with statementToBeEvaluated.middle.token.value
-	else define a new map in memory with key statementToBeEvaluated.left.token.value and 
-		value statementToBeEvaluated.middle.token.value
-	findMiddleSibling(ast, statementToBeEvaluated) and name it sibling
-	set the subtree in ast that refers to statementToBeEvaluated to sibling
-	set the subtree in ast that referes to sibling to null */
 		evalExp(evaluateMe.middle);
 		if(memory.containsKey(evaluateMe.left.token.value)) {
 			memory.put(evaluateMe.left.token.value, evaluateMe.middle.token.value);
 		}
 		else {
-			Map<String, String> temp = new HashMap<String, String>();
-			temp.put(evaluateMe.left.token.value, evaluateMe.middle.token.value);			
+			memory.put(evaluateMe.left.token.value, evaluateMe.middle.token.value);			
 		}
 		AST sibling = findMiddleSibling(ast, evaluateMe);
-
-
+		System.out.println("TAKEN 2 : " + sibling.left.token.value);
+		moveTree(evaluateMe, sibling);
+		sibling= null;
 	}
 	void evalStatementToBeEvaluated(AST statementToBeEvaluated){
-		/*
-				if statementToBeEvaluated.token.value is ":=" then
-					evalExp(statementToBeEvaluated.middle)
+
+		if (statementToBeEvaluated.token.value.compareTo(":=")==0){
+			evalAssignment(statementToBeEvaluated);
+		System.out.println("TAKEN : " +ast.left.left.token.value);
+		}
+
+
+		/*evalExp(statementToBeEvaluated.middle)
 					if memory already has a map for key statementToBeEvaluated.left.token.value then 
 						update the mapped value with statementToBeEvaluated.middle.token.value
 					else define a new map in memory with key statementToBeEvaluated.left.token.value and 
@@ -883,11 +890,11 @@ public class Token {
 	// this is the main evaluator method
 	void evaluateAST() {
 		//while(ast != null) {
-		System.out.println("Inside evaluateAST");
-		AST statementToBeEvaluated = findStatementToBeEvaluated(ast);
-		if (statementToBeEvaluated != null){
-			evalStatementToBeEvaluated(statementToBeEvaluated);
-		}
+			System.out.println("Inside evaluateAST");
+			AST statementToBeEvaluated = findStatementToBeEvaluated(ast);
+			if (statementToBeEvaluated != null){
+				evalStatementToBeEvaluated(statementToBeEvaluated);
+			}
 		//}
 	} 
 
@@ -910,6 +917,6 @@ public class Token {
 		grab.printTree(grab.parseStatement() , 0);
 		//evaluator
 		grab.evaluateAST();	
-		//grab.printMemory();
+		grab.printMemory();
 	}
 }
